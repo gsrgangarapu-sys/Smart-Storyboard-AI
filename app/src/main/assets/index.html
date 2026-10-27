@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Storyboard AI</title>
+<style>
+:root{--bg:#050b1f;--card:#0d1a3a;--card2:#13234d;--tx:#eaf1ff;--mut:#8ea3cf;--cy:#22d3ee;--bl:#3b82f6;--ok:#34d399;--wa:#fb923c;--er:#f87171;--line:#1d2f5e;
+font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#050b1f}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:#02060f;color:var(--tx);display:flex;justify-content:center;padding-top:env(safe-area-inset-top,0px)}
+#app{width:100%;max-width:430px;height:100%;background:var(--bg);display:flex;flex-direction:column;position:relative}
+header{padding:14px 18px 8px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;font-weight:700}
+header span{color:var(--cy)}
+main{flex:1;overflow-y:auto;padding:4px 16px 16px}
+nav{display:flex;border-top:1px solid var(--line);background:#071029;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 8px;font-size:11px;cursor:pointer}
+nav button b{display:block;font-size:19px;font-weight:400}
+nav button.on{color:var(--cy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:10px}
+.sp{justify-content:space-between}
+.m{color:var(--mut);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{border-radius:14px;padding:12px 6px;text-align:center}
+.stat b{display:block;font-size:26px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tabs button{flex:1;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--mut);cursor:pointer}
+.tabs button.on{background:var(--bl);color:#fff;border-color:var(--bl)}
+.tag{font-size:10px;padding:2px 7px;border-radius:6px;background:var(--card2);color:var(--cy)}
+.mic{width:68px;height:68px;border-radius:50%;border:0;background:radial-gradient(circle,var(--cy),var(--bl));color:#fff;font-size:28px;cursor:pointer;box-shadow:0 0 24px #22d3ee66;display:block;margin:14px auto 4px}
+.mic.live{animation:p 1s infinite}
+@keyframes p{50%{box-shadow:0 0 44px #22d3eeaa}}
+@media(prefers-reduced-motion:reduce){.mic.live{animation:none}}
+input{width:100%;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-size:15px}
+.bub{max-width:85%;padding:10px 12px;border-radius:14px;margin-bottom:8px;font-size:14px;line-height:1.4}
+.me{background:var(--bl);margin-left:auto}.ai{background:var(--card2)}
+.pos{color:var(--ok)}.neg{color:var(--er)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:4px;font-size:13px}
+.cal div{padding:7px 0;border-radius:50%;cursor:pointer}
+.cal .h{color:var(--mut);font-size:11px;cursor:default}.cal .sel{background:var(--bl)}.cal .ev{box-shadow:inset 0 -3px 0 var(--cy)}
+.btn{background:var(--bl);color:#fff;border:0;border-radius:10px;padding:8px 14px;cursor:pointer}
+.tg{width:42px;height:24px;border-radius:12px;background:var(--line);position:relative;cursor:pointer;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.tg.on{background:var(--cy)}.tg.on::after{left:21px}
+button:focus-visible,input:focus-visible,.tg:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+</style></head><body>
+<div id="app"><header><h1>Smart <span>Storyboard</span> AI</h1><span id="lang" class="tag" role="button" tabindex="0">EN</span></header>
+<main id="main"></main>
+<nav id="nav"></nav></div>
+<script>
+var S={tab:0,range:'Daily',flt:'All',fin:'Overview',day:28,lang:'EN',listen:false,q:'',chat:[],
+msgs:[
+{n:'Raju (WhatsApp)',t:'Meeting at 10 AM tomorrow',c:'Important',tm:'8:30 AM',r:0},
+{n:'Amazon',t:'Your order has shipped',c:'Shopping',tm:'7:15 AM',r:1},
+{n:'HDFC Bank',t:'Rs 5,000 credited to your account',c:'Finance',tm:'Yesterday',r:1},
+{n:'Electricity Board',t:'Bill of Rs 2,500 is due on 30 Apr',c:'Important',tm:'Yesterday',r:0},
+{n:'HR Team (Email)',t:'Project update and next steps',c:'Work',tm:'Yesterday',r:1},
+{n:'Mom (WhatsApp)',t:'Call me when free',c:'Personal',tm:'26 Apr',r:1}],
+ev:[['8:30 AM','WhatsApp','New message from Raju'],['10:00 AM','Team Meeting','At Office'],['12:30 PM','Lunch','Green Cafe'],['2:00 PM','Email','Project update'],['6:00 PM','Gym Session','Completed'],['8:15 PM','You paid Rs 1,200','Amazon']],
+tx:[['HDFC Bank (Credit)',5000,'28 Apr','Income'],['Amazon',-1200,'28 Apr','Expenses'],['Electricity Board',-2500,'28 Apr','Expenses'],['Salary advance',20000,'25 Apr','Income']],
+rem:[['Team meeting','10:00 AM'],['Electricity bill Rs 2,500','30 Apr'],['Gym session','6:00 PM']],
+set:{sheets:true,notif:true,gmail:false,cal:false,voice:true,otp:false}};
+var tabs=['Home','Storyboard','Inbox','Ask AI','Finance','Calendar','Settings'],ic=['⌂','▤','✉','✦','₹','▦','⚙'];
+function $(h){return h}
+function money(n){return '₹'+Math.abs(n).toLocaleString('en-IN')}
+function tgl(k){S.set[k]=!S.set[k];draw()}
+function go(i){S.tab=i;draw()}
+function home(){return '<div class="card row"><span style="font-size:30px">☀</span><div><b>'+(S.lang=='EN'?'Good morning!':'శుభోదయం!')+'</b><div class="m">Tue, 28 Apr 2026</div></div></div>'+
+'<div class="stats"><div class="stat" style="background:#1d4ed8"><b>5</b>Messages</div><div class="stat" style="background:#059669"><b>3</b>Events</div><div class="stat" style="background:#ea580c"><b>2</b>Payments</div></div>'+
+'<b>Today\'s highlights</b><div style="height:8px"></div>'+S.rem.map(function(r){return '<div class="card row sp"><span>'+r[0]+'</span><span class="m">'+r[1]+'</span></div>'}).join('')+
+'<button class="btn" style="width:100%" onclick="go(3);ask(\'Summarize my today\')">Hear my daily briefing</button>'}
+function story(){var e=S.ev;return '<div class="tabs">'+['Daily','Weekly','Monthly'].map(function(r){return '<button class="'+(S.range==r?'on':'')+'" onclick="S.range=\''+r+'\';draw()">'+r+'</button>'}).join('')+'</div>'+
+(S.range=='Daily'?e.map(function(x){return '<div class="card row"><span class="m" style="width:62px">'+x[0]+'</span><div><b>'+x[1]+'</b><div class="m">'+x[2]+'</div></div></div>'}).join(''):
+'<div class="card">'+(S.range=='Weekly'?'12 messages, 6 events, Rs 8,400 spent this week. Busiest day: Tuesday.':'48 messages, 21 events, Rs 18,200 spent this month. Savings up 12%.')+'</div>')}
+function inbox(){var f=['All','Important','Work','Finance','Personal'];
+var l=S.msgs.filter(function(m){return(S.flt=='All'||m.c==S.flt)&&(m.n+m.t).toLowerCase().indexOf(S.q)>-1});
+return '<input aria-label="Search" placeholder="Search messages" value="'+S.q+'" oninput="S.q=this.value.toLowerCase();draw(1)"><div style="height:10px"></div><div class="tabs" style="overflow-x:auto">'+f.map(function(r){return '<button class="'+(S.flt==r?'on':'')+'" onclick="S.flt=\''+r+'\';draw()">'+r+'</button>'}).join('')+'</div>'+
+(l.length?l.map(function(m){return '<div class="card"><div class="row sp"><b>'+m.n+'</b><span class="m">'+m.tm+'</span></div><div class="m" style="margin:4px 0">'+m.t+'</div><span class="tag">'+m.c+'</span></div>'}).join(''):'<div class="card m">No messages match. Clear the search or pick another filter.</div>')}
+function summary(){var inc=S.tx.filter(function(t){return t[1]>0}).reduce(function(a,t){return a+t[1]},0),ex=S.tx.filter(function(t){return t[1]<0}).reduce(function(a,t){return a-t[1]},0);
+return 'Here is your day: team meeting at 10 AM, '+S.msgs.length+' new messages, electricity bill '+money(2500)+' due 30 Apr, you received '+money(5000)+' from HDFC, and gym at 6 PM.'}
+function ask(q){S.chat.push({me:1,t:q});var l=q.toLowerCase(),a;
+if(/summar|today|briefing/.test(l))a=summary();
+else if(/bill|due|pay/.test(l))a='Electricity Board: '+money(2500)+' due on 30 Apr. Want me to set a reminder? (Needs your confirmation.)';
+else if(/spent|expense|money/.test(l))a='You spent '+money(3700)+' recently and earned '+money(25000)+'.';
+else a='I can summarize your day, check bills, or find messages. Try asking about payments.';
+S.chat.push({t:a});draw();if(S.set.voice&&window.speechSynthesis){try{var u=new SpeechSynthesisUtterance(a);u.lang=S.lang=='EN'?'en-IN':'te-IN';speechSynthesis.speak(u)}catch(e){}}}
+function mic(){var R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){S.chat.push({t:'Voice input is not supported in this browser. Type your question instead.'});return draw()}
+var r=new R();r.lang=S.lang=='EN'?'en-IN':'te-IN';r.onresult=function(e){S.listen=false;ask(e.results[0][0].transcript)};r.onerror=r.onend=function(){S.listen=false;draw()};S.listen=true;r.start();draw()}
+function askUI(){return (S.chat.length?S.chat.map(function(c){return '<div class="bub '+(c.me?'me':'ai')+'">'+c.t+'</div>'}).join(''):'<div class="card m">Ask in English or తెలుగు. Try “Summarize my today”.</div>')+
+'<div class="row" style="margin-top:8px"><input id="qi" aria-label="Ask AI" placeholder="Ask anything…" onkeydown="if(event.key==\'Enter\'&&this.value){ask(this.value)}"><button class="btn" onclick="var v=qi.value;if(v)ask(v)">Send</button></div>'+
+'<button class="mic'+(S.listen?' live':'')+'" aria-label="Speak" onclick="mic()">🎙</button><div class="m" style="text-align:center">'+(S.listen?'Listening…':'Tap to speak')+'</div>'}
+function fin(){var inc=S.tx.filter(function(t){return t[1]>0}).reduce(function(a,t){return a+t[1]},0),ex=S.tx.filter(function(t){return t[1]<0}).reduce(function(a,t){return a-t[1]},0);
+var l=S.tx.filter(function(t){return S.fin=='Overview'||t[3]==S.fin});
+return '<div class="tabs">'+['Overview','Income','Expenses'].map(function(r){return '<button class="'+(S.fin==r?'on':'')+'" onclick="S.fin=\''+r+'\';draw()">'+r+'</button>'}).join('')+'</div>'+
+'<div class="card"><div class="m">Total balance</div><b style="font-size:32px">'+money(inc-ex+7650)+'</b></div>'+
+'<div class="stats"><div class="card"><div class="m">Income</div><b class="pos">'+money(inc)+'</b></div><div class="card"><div class="m">Expenses</div><b class="neg">'+money(ex)+'</b></div><div class="card"><div class="m">Pending</div><b style="color:var(--wa)">₹4,500</b></div></div>'+
+l.map(function(t){return '<div class="card row sp"><div><b>'+t[0]+'</b><div class="m">'+t[2]+'</div></div><b class="'+(t[1]>0?'pos':'neg')+'">'+(t[1]>0?'+':'−')+money(t[1])+'</b></div>'}).join('')}
+function calv(){var h='';['S','M','T','W','T','F','S'].forEach(function(d){h+='<div class="h">'+d+'</div>'});h+='<div></div><div></div>';
+for(var d=1;d<=30;d++)h+='<div class="'+(d==S.day?'sel':'')+([28,30,10].indexOf(d)>-1?' ev':'')+'" onclick="S.day='+d+';draw()">'+d+'</div>';
+var e=S.day==28?S.rem:S.day==30?[['Electricity bill Rs 2,500','Due']]:[];
+return '<div class="card"><div class="row sp"><b>April 2026</b><span class="m">Underline = event</span></div><div class="cal" style="margin-top:10px">'+h+'</div></div><b>'+S.day+' Apr</b><div style="height:8px"></div>'+
+(e.length?e.map(function(r){return '<div class="card row sp"><span>'+r[0]+'</span><span class="m">'+r[1]+'</span></div>'}).join(''):'<div class="card m">Nothing planned. Ask AI to add a reminder.</div>')}
+function sett(){var it=[['sheets','Google Sheets','Smart Storyboard Database'],['notif','Notification access','Selected apps only'],['gmail','Gmail integration','Optional, not connected'],['cal','Calendar integration','Optional, not connected'],['voice','Spoken answers','Telugu / English'],['otp','Include OTP messages','Off by default for safety']];
+return it.map(function(i){return '<div class="card row sp"><div><b>'+i[1]+'</b><div class="m">'+i[2]+'</div></div><div class="tg'+(S.set[i[0]]?' on':'')+'" role="switch" tabindex="0" aria-checked="'+S.set[i[0]]+'" aria-label="'+i[1]+'" onclick="tgl(\''+i[0]+'\')"></div></div>'}).join('')+
+'<div class="card m">This is a design prototype. Sheets, Gmail and Calendar toggles do not connect to real accounts yet.</div>'}
+var V=[home,story,inbox,askUI,fin,calv,sett];
+function draw(keep){document.getElementById('nav').innerHTML=tabs.map(function(t,i){return '<button class="'+(S.tab==i?'on':'')+'" onclick="go('+i+')"><b>'+ic[i]+'</b>'+t+'</button>'}).join('');
+var m=document.getElementById('main');m.innerHTML=V[S.tab]();if(keep){var i=m.querySelector('input');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}}else if(S.tab==3)m.scrollTop=m.scrollHeight;else m.scrollTop=0}
+document.getElementById('lang').onclick=function(){S.lang=S.lang=='EN'?'తెలుగు':'EN';this.textContent=S.lang=='EN'?'EN':'తె';draw()};
+draw();
+</script></body></html>
